@@ -1,4 +1,5 @@
 import { gameData } from './gameData.js';
+import GAME_CONFIG from './config.js';
 
 // === ELEMEN DOM ===
 const elements = {
