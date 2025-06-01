@@ -3,7 +3,34 @@ import { gameData, saveGameData } from './gameData.js';
 import { elements, updateUI, showResult } from './ui.js';
 import { createBurstConfetti } from './animations.js';
 
-// === FUNGSI SPINNING LOGIC ===
+// === FUNGSI DETEKSI HASIL BERDASARKAN POSISI RODA ===
+function detectResultFromAngle(finalAngle) {
+    // Normalisasi angle (0-360)
+    const normalizedAngle = ((finalAngle % 360) + 360) % 360;
+
+    // Panah berada di atas (270° dalam koordinat roda)
+    // Hitung sudut relatif dari panah
+    const angleFromTop = (normalizedAngle + 90) % 360; // Konversi ke koordinat dengan top = 0°
+
+    // Setiap segment = 45°, hitung index segment
+    const segmentAngle = 360 / GAME_CONFIG.segments.length;
+    let segmentIndex = Math.floor(angleFromTop / segmentAngle);
+
+    // Pastikan index dalam range yang valid
+    segmentIndex = segmentIndex % GAME_CONFIG.segments.length;
+
+    // Debug log yang lebih jelas
+    console.log(`=== DETEKSI HASIL ===`);
+    console.log(`Final Angle: ${normalizedAngle.toFixed(1)}°`);
+    console.log(`Angle from Top: ${angleFromTop.toFixed(1)}°`);
+    console.log(`Segment Index: ${segmentIndex}`);
+    console.log(`Detected: ${GAME_CONFIG.segments[segmentIndex].label} (${GAME_CONFIG.segments[segmentIndex].value} coins)`);
+    console.log(`==================`);
+
+    return GAME_CONFIG.segments[segmentIndex];
+}
+
+// === FUNGSI RANDOM DENGAN PROBABILITAS ===
 function getRandomResult() {
     const random = Math.random();
     let cumulative = 0;
@@ -33,19 +60,27 @@ function spinWheel() {
     updateUI();
     showResult('🎲 Berputar...', 'Menunggu keberuntungan Anda!');
 
-    // Tentukan hasil
-    const result = getRandomResult();
-    const segmentIndex = GAME_CONFIG.segments.indexOf(result);
+    // Tentukan hasil berdasarkan probabilitas
+    const targetResult = getRandomResult();
+    const targetIndex = GAME_CONFIG.segments.indexOf(targetResult);
+
+    // Hitung angle yang diperlukan untuk membawa segment target ke panah
     const segmentAngle = 360 / GAME_CONFIG.segments.length;
+    const segmentCenterAngle = targetIndex * segmentAngle + (segmentAngle / 2);
 
-    // Kalkulasi sudut target yang benar
-    // Sekarang segment sudah sejajar dengan panah, jadi kalkulasi lebih sederhana
-    // Untuk segment index N, kita perlu rotasi agar segment tersebut berada di atas
-    const targetAngle = -(segmentIndex * segmentAngle);
+    // Target angle untuk membawa segment ke top (panah)
+    const targetAngle = 360 - segmentCenterAngle - 90; // -90 untuk offset panah
 
-    // Hitung rotasi total (beberapa putaran penuh + target)
-    const spins = 4 + Math.random() * 4; // 4-8 putaran penuh
-    const totalRotation = (spins * 360) + targetAngle;
+    // Tambahkan putaran penuh dan sedikit randomness
+    const spins = 4 + Math.random() * 4;
+    const randomOffset = (Math.random() - 0.5) * (segmentAngle * 0.6);
+    const totalRotation = (spins * 360) + targetAngle + randomOffset;
+
+    console.log(`=== TARGET ===`);
+    console.log(`Target: ${targetResult.label} (Index: ${targetIndex})`);
+    console.log(`Target Angle: ${targetAngle.toFixed(1)}°`);
+    console.log(`Total Rotation: ${totalRotation.toFixed(1)}°`);
+    console.log(`==============`);
 
     // Animasi spinning
     elements.canvas.style.transform = `rotate(${totalRotation}deg)`;
@@ -54,8 +89,10 @@ function spinWheel() {
     const animationDuration = gameData.animationSpeed === 'slow' ? 5000 :
         gameData.animationSpeed === 'fast' ? 2500 : 3500;
 
-    // Setelah animasi selesai
+    // Setelah animasi selesai, deteksi hasil berdasarkan posisi akhir
     setTimeout(() => {
+        const finalAngle = totalRotation % 360;
+        const result = detectResultFromAngle(finalAngle);
         handleSpinResult(result);
     }, animationDuration);
 }
