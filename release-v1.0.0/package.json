@@ -1,0 +1,40 @@
+{
+    "name": "spinwheels-game",
+    "version": "1.0.0",
+    "description": "🎰 Game roda keberuntungan yang menyenangkan dengan sistem koin, level, bonus harian, dan sistem FAIR yang transparan!",
+    "main": "index.html",
+    "scripts": {
+        "start": "python server.py",
+        "dev": "python server.py",
+        "serve": "python -m http.server 8000",
+        "build": "echo 'No build process needed - static files ready for deployment'",
+        "test": "echo 'No tests specified'"
+    },
+    "keywords": [
+        "game",
+        "wheel",
+        "spin",
+        "casino",
+        "javascript",
+        "html5",
+        "canvas",
+        "fair-game",
+        "browser-game",
+        "entertainment"
+    ],
+    "author": "SpinWheels Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/handi425/SpinWheels_Html.git"
+    },
+    "bugs": {
+        "url": "https://github.com/handi425/SpinWheels_Html/issues"
+    },
+    "homepage": "https://github.com/handi425/SpinWheels_Html#readme",
+    "engines": {
+        "python": ">=3.6"
+    },
+    "devDependencies": {},
+    "dependencies": {}
+}

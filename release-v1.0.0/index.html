@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 SpinWheels - Game Roda Keberuntungan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styling CSS yang dipisah menjadi beberapa file -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/wheel.css">
+    <link rel="stylesheet" href="styles/controls.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/modals.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+</head>
+
+<body>
+    <!-- Header dengan informasi pemain -->
+    <header class="game-header">
+        <div class="header-content">
+            <h1 class="game-title">🎰 SpinWheels</h1>
+            <div class="player-stats">
+                <div class="coin-display">
+                    <span class="coin-icon">🪙</span>
+                    <span class="coin-amount" id="coinAmount">1000</span>
+                </div>
+                <div class="level-display">
+                    <span class="level-text">Level</span>
+                    <span class="level-number" id="playerLevel">1</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Konten utama game -->
+    <main class="game-container">
+        <!-- Area wheel utama -->
+        <section class="wheel-section">
+            <div class="wheel-container">
+                <!-- Pointer/penunjuk roda -->
+                <div class="wheel-pointer"></div>
+
+                <!-- Roda spinning -->
+                <canvas class="spinning-wheel" id="wheelCanvas" width="400" height="400"></canvas>
+            </div>
+
+            <!-- Informasi hasil putaran -->
+            <div class="result-display" id="resultDisplay">
+                <div class="result-content">
+                    <h3 class="result-title" id="resultTitle">🎯 Selamat Datang!</h3>
+                    <p class="result-description" id="resultDescription">Klik tombol "PUTAR RODA" untuk memulai
+                        permainan</p>
+                    <div id="resultAnimation"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kontrol game -->
+        <section class="game-controls">
+            <button class="spin-button" id="spinButton" type="button">
+                <span class="button-text">PUTAR RODA</span>
+                <span class="button-cost">(-50 🪙)</span>
+            </button>
+
+            <div class="control-buttons">
+                <button class="control-btn" id="dailyBonus" type="button">
+                    🎁 Bonus Harian
+                </button>
+                <button class="control-btn" id="statsButton" type="button">
+                    📊 Statistik
+                </button>
+                <button class="control-btn" id="settingsButton" type="button">
+                    ⚙️ Pengaturan
+                </button>
+                <button class="control-btn" id="helpButton" type="button">
+                    ❓ Bantuan
+                </button>
+                <button class="control-btn" id="debugButton" type="button"
+                    style="background: linear-gradient(135deg, #FF6B6B, #FF8E53);">
+                    🔧 Debug Mode
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Statistik -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <h3>📊 Statistik Permainan</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span>Total Putaran:</span>
+                    <span id="totalSpins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Total Kemenangan:</span>
+                    <span id="totalWins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Koin Terbanyak:</span>
+                    <span id="maxCoins">1000</span>
+                </div>
+                <div class="stat-item">
+                    <span>Win Rate:</span>
+                    <span id="winRate">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span>Total Koin Dimenangkan:</span>
+                    <span id="totalCoinsWon">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Jackpot Terbesar:</span>
+                    <span id="biggestJackpot">0</span>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeModal('statsModal')">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Bantuan -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <h3>❓ Cara Bermain</h3>
+            <div style="text-align: left; line-height: 1.6;">
+                <p><strong>🎯 Tujuan:</strong> Putar roda untuk memenangkan koin!</p>
+                <br>
+                <p><strong>📋 Cara Bermain:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li>Klik tombol "PUTAR RODA" (cost: 50 koin)</li>
+                    <li>Tunggu roda berhenti berputar</li>
+                    <li>Dapatkan hadiah sesuai hasil putaran</li>
+                    <li>Klaim bonus harian setiap hari!</li>
+                </ul>
+                <br>
+                <p><strong>🏆 Tips:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li>Jangan lupa klaim bonus harian</li>
+                    <li>Pantau statistik untuk tracking progress</li>
+                    <li>Level naik setiap 10 putaran</li>
+                </ul>
+                <br>
+                <p><strong>⌨️ Shortcut Keys:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li><strong>SPACE</strong> - Putar roda</li>
+                    <li><strong>H</strong> - Buka bantuan</li>
+                    <li><strong>S</strong> - Buka statistik</li>
+                    <li><strong>D</strong> - Toggle debug mode</li>
+                </ul>
+                <br>
+                <p><strong>🔧 Debug Mode:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li>Tekan tombol "Debug Mode" atau tekan <strong>D</strong></li>
+                    <li>Lihat garis merah yang menunjukkan posisi arrow</li>
+                    <li>Lihat nomor segment dan pembagian area</li>
+                    <li>Monitor deteksi hasil secara real-time</li>
+                    <li>Verifikasi bahwa hasil sesuai dengan posisi arrow</li>
+                </ul>
+            </div>
+            <button class="close-btn" onclick="closeModal('helpModal')">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Pengaturan -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>⚙️ Pengaturan Game</h3>
+
+            <div class="setting-item">
+                <span class="setting-label">🔊 Efek Suara</span>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <span class="setting-label">⚡ Kecepatan Animasi</span>
+                <div class="setting-control">
+                    <div class="speed-selector">
+                        <button class="speed-btn" data-speed="slow">🐌 Lambat</button>
+                        <button class="speed-btn active" data-speed="normal">🚀 Normal</button>
+                        <button class="speed-btn" data-speed="fast">⚡ Cepat</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <span class="setting-label">🎊 Efek Confetti</span>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="confettiToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item">
+                <span class="setting-label">🔄 Reset Game</span>
+                <div class="setting-control">
+                    <button class="reset-btn" id="resetGameBtn">Reset Semua Data</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <button class="close-btn" onclick="closeModal('settingsModal')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Reset -->
+    <div id="confirmModal" class="modal">
+        <div class="confirm-dialog">
+            <h3>⚠️ Konfirmasi Reset</h3>
+            <p>Apakah Anda yakin ingin mereset semua progress game?</p>
+            <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">
+                Semua koin, level, dan statistik akan hilang!
+            </p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-yes" id="confirmYes">Ya, Reset</button>
+                <button class="confirm-btn confirm-no" id="confirmNo">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer dengan informasi tambahan -->
+    <footer class="game-footer">
+        <p>&copy; 2025 SpinWheels Game - Dibuat dengan ❤️ untuk hiburan</p>
+        <p class="disclaimer">Ini adalah permainan hiburan, tidak menggunakan uang asli</p>
+    </footer>
+
+    <!-- JavaScript modules yang dipisah menjadi beberapa file -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+/* === SECTION WHEEL === */
+.wheel-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.wheel-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 40px solid #FFD700;
+    z-index: 10;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    animation: pointerGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes pointerGlow {
+    from {
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    to {
+        filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.8));
+    }
+}
+
+.spinning-wheel {
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3), 0 0 60px rgba(255, 255, 255, 0.1);
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.spinning-wheel:hover {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.4), 0 0 80px rgba(255, 255, 255, 0.2);
+}
+
+/* === RESULT DISPLAY === */
+.result-display {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    min-width: 350px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.result-title {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.result-description {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.win-animation {
+    animation: celebrate 0.6s ease-in-out;
+}
+
+@keyframes celebrate {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

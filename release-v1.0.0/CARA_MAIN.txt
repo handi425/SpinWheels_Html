@@ -1,0 +1,29 @@
+🎰 CARA MENJALANKAN SPINWHEELS GAME
+==========================================
+
+📋 LANGKAH MUDAH:
+1. Double-click file "start_game.bat" 
+2. Game akan otomatis terbuka di browser
+3. Mulai bermain!
+
+⚠️ JIKA ERROR:
+- Pastikan Python terinstall di komputer
+- Atau buka Command Prompt di folder ini
+- Ketik: python server.py
+- Buka browser ke: http://localhost:8000
+
+🎮 KONTROL GAME:
+- SPACE = Putar roda
+- H = Bantuan  
+- S = Statistik
+- Klik tombol untuk bermain
+
+💡 TIPS:
+- Jangan lupa klaim bonus harian!
+- Butuh 50 koin untuk sekali putar
+- Level naik setiap 10 putaran
+
+❓ MASALAH?
+Baca file README.md untuk panduan lengkap
+
+Selamat bermain! 🍀 

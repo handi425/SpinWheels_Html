@@ -1,0 +1,19 @@
+{
+  "name": "SpinWheels Game",
+  "version": "1.0.0",
+  "release_date": "2025-06-01T20:51:54.309530",
+  "description": "Game roda keberuntungan dengan sistem fair dan transparan",
+  "files_included": [
+    "index.html",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "package.json",
+    "server.py",
+    "start_game.bat",
+    "CARA_MAIN.txt",
+    "js/",
+    "styles/",
+    "screenshot/"
+  ]
+}
