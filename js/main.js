@@ -17,6 +17,16 @@ function initEventListeners() {
     elements.helpButton.addEventListener('click', () => openModal('helpModal'));
     elements.settingsButton.addEventListener('click', () => openModal('settingsModal'));
 
+    // Tombol debug
+    const debugButton = document.getElementById('debugButton');
+    if (debugButton) {
+        debugButton.addEventListener('click', () => {
+            if (window.gameDebug && window.gameDebug.toggleDebugMode) {
+                window.gameDebug.toggleDebugMode();
+            }
+        });
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && !gameData.isSpinning) {
@@ -36,16 +46,44 @@ function initEventListeners() {
 
 // === INISIALISASI GAME ===
 function initGame() {
+    console.log('🚀 Initializing game...');
+
     drawWheel();
+    // Load data terlebih dahulu
     loadGameData();
+
+    // Safety check - pastikan tidak ada status spinning yang tertinggal
+    if (gameData.isSpinning) {
+        console.warn('⚠️ Found leftover spinning status, resetting...');
+        gameData.isSpinning = false;
+        saveGameData();
+    }
+
+    // Update UI
     updateUI();
     updateDailyBonusButton();
     syncSettingsUI();
 
+    console.log('🎮 Game initialized - Status:', {
+        coins: gameData.coins,
+        level: gameData.level,
+        isSpinning: gameData.isSpinning
+    });
+
+    // Info sistem fair
+    console.log(`
+🎯 ===== SISTEM FAIR AKTIF =====
+✅ Rotasi benar-benar acak
+✅ Hasil berdasarkan posisi arrow
+✅ Tidak ada predetermined result
+✅ Transparansi penuh
+===============================
+    `);
+
     // Selamat datang untuk pemain baru
     if (gameData.totalSpins === 0) {
         setTimeout(() => {
-            showResult('🎯 Selamat Datang di SpinWheels!', 'Tekan SPACE atau klik tombol untuk memulai! (💡 Tekan H untuk bantuan)');
+            showResult('🎯 Selamat Datang di SpinWheels!', 'Game menggunakan sistem FAIR - hasil ditentukan oleh posisi arrow! (💡 Tekan H untuk bantuan)');
 
             // Confetti welcome untuk pemain baru
             if (gameData.confettiEnabled) {

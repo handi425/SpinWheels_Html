@@ -33,16 +33,25 @@ function updateUI() {
 function updateSpinButton() {
     if (gameData.isSpinning) {
         elements.spinButton.disabled = true;
-        elements.spinButton.innerHTML = '<span class="button-text">BERPUTAR...</span>';
+        elements.spinButton.innerHTML = `
+            <span class="button-text spinning-text">
+                <span class="spinner">⚡</span>
+                BERPUTAR...
+            </span>
+            <span class="button-cost">Tunggu sebentar...</span>
+        `;
+        elements.spinButton.classList.add('spinning');
     } else if (gameData.coins < GAME_CONFIG.spinCost) {
         elements.spinButton.disabled = true;
         elements.spinButton.innerHTML = '<span class="button-text">KOIN TIDAK CUKUP</span>';
+        elements.spinButton.classList.remove('spinning');
     } else {
         elements.spinButton.disabled = false;
         elements.spinButton.innerHTML = `
             <span class="button-text">PUTAR RODA</span>
             <span class="button-cost">(-${GAME_CONFIG.spinCost} 🪙)</span>
         `;
+        elements.spinButton.classList.remove('spinning');
     }
 }
 

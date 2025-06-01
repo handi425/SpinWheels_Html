@@ -25,6 +25,47 @@
     overflow: hidden;
 }
 
+.spin-button.spinning {
+    background: linear-gradient(135deg, #4ECDC4, #44A08D);
+    animation: pulse 1.5s ease-in-out infinite;
+    cursor: not-allowed;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.6);
+    }
+}
+
+.spinning-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .spin-button::before {
     content: '';
     position: absolute;
@@ -40,16 +81,16 @@
     left: 100%;
 }
 
-.spin-button:hover {
+.spin-button:hover:not(.spinning) {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
 }
 
-.spin-button:active {
+.spin-button:active:not(.spinning) {
     transform: translateY(-1px);
 }
 
-.spin-button:disabled {
+.spin-button:disabled:not(.spinning) {
     background: linear-gradient(135deg, #ccc, #ddd);
     cursor: not-allowed;
     transform: none;

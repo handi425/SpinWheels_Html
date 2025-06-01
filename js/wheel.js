@@ -3,22 +3,48 @@ import { elements } from './ui.js';
 
 // === FUNGSI MENGGAMBAR RODA ===
 function drawWheel() {
+    console.log('🎨 Starting to draw wheel...');
+
+    if (!elements.canvas) {
+        console.error('❌ Canvas element not found!');
+        return;
+    }
+
     const ctx = elements.canvas.getContext('2d');
+    if (!ctx) {
+        console.error('❌ Canvas context not available!');
+        return;
+    }
+
+    console.log('✅ Canvas and context available');
+    console.log('📊 Segments to draw:', GAME_CONFIG.segments.length);
+    console.log('📏 Canvas size:', elements.canvas.width, 'x', elements.canvas.height);
+
     const centerX = elements.canvas.width / 2;
     const centerY = elements.canvas.height / 2;
     const radius = 180;
 
     // Bersihkan canvas
     ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
+    console.log('🧹 Canvas cleared');
+
+    // Gambar background debug
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+    ctx.fillRect(0, 0, elements.canvas.width, elements.canvas.height);
+    console.log('🔴 Debug background drawn');
 
     // Hitung sudut untuk setiap segment
     const totalSegments = GAME_CONFIG.segments.length;
     const anglePerSegment = (Math.PI * 2) / totalSegments;
 
+    console.log(`📐 Angle per segment: ${anglePerSegment} radians`);
+
     // Gambar setiap segment (kembali ke orientasi asli)
     GAME_CONFIG.segments.forEach((segment, index) => {
         const startAngle = index * anglePerSegment;
         const endAngle = startAngle + anglePerSegment;
+
+        console.log(`🎨 Drawing segment ${index}: ${segment.label} (${segment.color})`);
 
         // Gambar segment
         ctx.beginPath();
@@ -45,12 +71,16 @@ function drawWheel() {
         ctx.rotate(startAngle + anglePerSegment / 2);
         ctx.textAlign = 'center';
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 18px Poppins';
+
+        // Gunakan fallback font jika Poppins tidak tersedia
+        ctx.font = 'bold 18px Poppins, Arial, sans-serif';
         ctx.fillText(segment.label, radius * 0.7, -5);
-        ctx.font = 'bold 14px Poppins';
+        ctx.font = 'bold 14px Poppins, Arial, sans-serif';
         ctx.fillText('🪙', radius * 0.7, 15);
         ctx.restore();
     });
+
+    console.log('✅ All segments drawn');
 
     // Gambar lingkaran tengah dengan gradient
     const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 35);
@@ -67,9 +97,19 @@ function drawWheel() {
 
     // Logo di tengah
     ctx.fillStyle = '#FFD700';
-    ctx.font = 'bold 20px Poppins';
+    ctx.font = 'bold 20px Poppins, Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('🎰', centerX, centerY + 8);
+
+    console.log('🎯 Wheel drawing completed successfully!');
+}
+
+// Fungsi untuk memaksa redraw wheel
+function forceRedrawWheel() {
+    console.log('🔄 Force redrawing wheel...');
+    setTimeout(() => {
+        drawWheel();
+    }, 50);
 }
 
 // Fungsi untuk menggelapkan warna
@@ -81,4 +121,4 @@ function darkenColor(color, amount) {
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
-export { drawWheel };
+export { drawWheel, forceRedrawWheel };
