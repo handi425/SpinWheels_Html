@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test SpinWheels Modules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .info {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>🧪 SpinWheels Module Test</h1>
+        <p>Buka console untuk melihat hasil testing...</p>
+        <div id="output"></div>
+
+        <h2>Manual Tests:</h2>
+        <button onclick="window.open('index.html', '_blank')">🎰 Open Main Game</button>
+        <button onclick="testGameLoadManually()">🔄 Test Game Load</button>
+    </div>
+
+    <script>
+        function testGameLoadManually() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p class="info">Testing game modules manually...</p>';
+
+            // Coba akses main game
+            try {
+                fetch('index.html')
+                    .then(response => {
+                        if (response.ok) {
+                            output.innerHTML += '<p class="success">✓ index.html accessible</p>';
+                        } else {
+                            output.innerHTML += '<p class="error">❌ index.html not accessible</p>';
+                        }
+                    })
+                    .catch(error => {
+                        output.innerHTML += '<p class="error">❌ Error: ' + error.message + '</p>';
+                    });
+            } catch (e) {
+                output.innerHTML += '<p class="error">❌ Error: ' + e.message + '</p>';
+            }
+        }
+    </script>
+    <script type="module" src="test.js"></script>
+</body>
+
+</html>
