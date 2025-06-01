@@ -15,9 +15,13 @@ function drawWheel() {
     const totalSegments = GAME_CONFIG.segments.length;
     const anglePerSegment = (Math.PI * 2) / totalSegments;
 
+    // Offset untuk menyelaraskan segment pertama dengan panah di atas
+    // Panah berada di -90° (atau 270°), jadi kita perlu offset
+    const offsetAngle = -Math.PI / 2 - anglePerSegment / 2;
+
     // Gambar setiap segment
     GAME_CONFIG.segments.forEach((segment, index) => {
-        const startAngle = index * anglePerSegment;
+        const startAngle = index * anglePerSegment + offsetAngle;
         const endAngle = startAngle + anglePerSegment;
 
         // Gambar segment

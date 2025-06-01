@@ -36,12 +36,16 @@ function spinWheel() {
     // Tentukan hasil
     const result = getRandomResult();
     const segmentIndex = GAME_CONFIG.segments.indexOf(result);
-    const segmentAngle = (360 / GAME_CONFIG.segments.length);
-    const targetAngle = (segmentIndex * segmentAngle) + (segmentAngle / 2);
+    const segmentAngle = 360 / GAME_CONFIG.segments.length;
+
+    // Kalkulasi sudut target yang benar
+    // Sekarang segment sudah sejajar dengan panah, jadi kalkulasi lebih sederhana
+    // Untuk segment index N, kita perlu rotasi agar segment tersebut berada di atas
+    const targetAngle = -(segmentIndex * segmentAngle);
 
     // Hitung rotasi total (beberapa putaran penuh + target)
     const spins = 4 + Math.random() * 4; // 4-8 putaran penuh
-    const totalRotation = (spins * 360) + (360 - targetAngle);
+    const totalRotation = (spins * 360) + targetAngle;
 
     // Animasi spinning
     elements.canvas.style.transform = `rotate(${totalRotation}deg)`;
