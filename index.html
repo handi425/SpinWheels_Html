@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 SpinWheels - Game Roda Keberuntungan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* === RESET CSS & KONFIGURASI DASAR === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* === HEADER STYLING === */
+        .game-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.2); }
+            to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.4); }
+        }
+
+        .player-stats {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .coin-display, .level-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .coin-display:hover, .level-display:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .coin-icon {
+            font-size: 1.2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+            60% { transform: translateY(-3px); }
+        }
+
+        /* === CONTAINER UTAMA === */
+        .game-container {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        /* === SECTION WHEEL === */
+        .wheel-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .wheel-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #FFD700;
+            z-index: 10;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            animation: pointerGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pointerGlow {
+            from { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+            to { filter: drop-shadow(0 4px 8px rgba(255,215,0,0.8)); }
+        }
+
+        .spinning-wheel {
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3), 0 0 60px rgba(255,255,255,0.1);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            cursor: pointer;
+        }
+
+        .spinning-wheel:hover {
+            box-shadow: 0 0 40px rgba(0,0,0,0.4), 0 0 80px rgba(255,255,255,0.2);
+        }
+
+        /* === RESULT DISPLAY === */
+        .result-display {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            min-width: 350px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .result-title {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .result-description {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .win-animation {
+            animation: celebrate 0.6s ease-in-out;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: linear-gradient(135deg, #FFD700, #FFA500); }
+            100% { transform: scale(1); }
+        }
+
+        /* === GAME CONTROLS === */
+        .game-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .spin-button {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: white;
+            border: none;
+            padding: 1.5rem 3rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spin-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .spin-button:hover::before {
+            left: 100%;
+        }
+
+        .spin-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        .spin-button:active {
+            transform: translateY(-1px);
+        }
+
+        .spin-button:disabled {
+            background: linear-gradient(135deg, #ccc, #ddd);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .button-text {
+            font-size: 1.2rem;
+        }
+
+        .button-cost {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 1rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
+
+        /* === CONFETTI ANIMATION === */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            top: -10px;
+            z-index: 999;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti:nth-child(odd) {
+            background: #FF6B6B;
+            animation-duration: 2.5s;
+        }
+
+        .confetti:nth-child(3n) {
+            background: #4ECDC4;
+            animation-duration: 3.5s;
+        }
+
+        .confetti:nth-child(4n) {
+            background: #45B7D1;
+            animation-duration: 2.8s;
+        }
+
+        .confetti:nth-child(5n) {
+            background: #96CEB4;
+            animation-duration: 3.2s;
+        }
+
+        /* === MODAL STYLES === */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease-out;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .close-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        /* === SETTINGS MODAL STYLES === */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+
+        .setting-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .speed-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .speed-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .speed-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .speed-btn:hover {
+            border-color: #667eea;
+        }
+
+        .reset-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+
+        .confirm-dialog {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 350px;
+            margin: 20% auto;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .confirm-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-yes {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .confirm-no {
+            background: #ddd;
+            color: #333;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* === FOOTER === */
+        .game-footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .disclaimer {
+            opacity: 0.8;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .player-stats {
+                gap: 1rem;
+            }
+
+            .game-container {
+                padding: 1rem;
+            }
+
+            .spinning-wheel {
+                width: 300px !important;
+                height: 300px !important;
+            }
+
+            .result-display {
+                min-width: 280px;
+                padding: 1.5rem;
+            }
+
+            .control-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .control-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .spinning-wheel {
+                width: 250px !important;
+                height: 250px !important;
+            }
+
+            .spin-button {
+                padding: 1.2rem 2rem;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header dengan informasi pemain -->
+    <header class="game-header">
+        <div class="header-content">
+            <h1 class="game-title">🎰 SpinWheels</h1>
+            <div class="player-stats">
+                <div class="coin-display">
+                    <span class="coin-icon">🪙</span>
+                    <span class="coin-amount" id="coinAmount">1000</span>
+                </div>
+                <div class="level-display">
+                    <span class="level-text">Level</span>
+                    <span class="level-number" id="playerLevel">1</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Konten utama game -->
+    <main class="game-container">
+        <!-- Area wheel utama -->
+        <section class="wheel-section">
+            <div class="wheel-container">
+                <!-- Pointer/penunjuk roda -->
+                <div class="wheel-pointer"></div>
+                
+                <!-- Roda spinning -->
+                <canvas class="spinning-wheel" id="wheelCanvas" width="400" height="400"></canvas>
+            </div>
+            
+            <!-- Informasi hasil putaran -->
+            <div class="result-display" id="resultDisplay">
+                <div class="result-content">
+                    <h3 class="result-title" id="resultTitle">🎯 Selamat Datang!</h3>
+                    <p class="result-description" id="resultDescription">Klik tombol "PUTAR RODA" untuk memulai permainan</p>
+                    <div id="resultAnimation"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kontrol game -->
+        <section class="game-controls">
+            <button class="spin-button" id="spinButton" type="button">
+                <span class="button-text">PUTAR RODA</span>
+                <span class="button-cost">(-50 🪙)</span>
+            </button>
+            
+            <div class="control-buttons">
+                <button class="control-btn" id="dailyBonus" type="button">
+                    🎁 Bonus Harian
+                </button>
+                <button class="control-btn" id="statsButton" type="button">
+                    📊 Statistik
+                </button>
+                <button class="control-btn" id="settingsButton" type="button">
+                    ⚙️ Pengaturan
+                </button>
+                <button class="control-btn" id="helpButton" type="button">
+                    ❓ Bantuan
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Statistik -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <h3>📊 Statistik Permainan</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span>Total Putaran:</span>
+                    <span id="totalSpins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Total Kemenangan:</span>
+                    <span id="totalWins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Koin Terbanyak:</span>
+                    <span id="maxCoins">1000</span>
+                </div>
+                <div class="stat-item">
+                    <span>Win Rate:</span>
+                    <span id="winRate">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span>Total Koin Dimenangkan:</span>
+                    <span id="totalCoinsWon">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Jackpot Terbesar:</span>
+                    <span id="biggestJackpot">0</span>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeModal('statsModal')">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Bantuan -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <h3>❓ Cara Bermain</h3>
+            <div style="text-align: left; line-height: 1.6;">
+                <p><strong>🎯 Tujuan:</strong> Putar roda untuk memenangkan koin!</p>
+                <br>
+                <p><strong>📋 Cara Bermain:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li>Klik tombol "PUTAR RODA" (cost: 50 koin)</li>
+                    <li>Tunggu roda berhenti berputar</li>
+                    <li>Dapatkan hadiah sesuai hasil putaran</li>
+                    <li>Klaim bonus harian setiap hari!</li>
+                </ul>
+                <br>
+                <p><strong>🏆 Tips:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li>Jangan lupa klaim bonus harian</li>
+                    <li>Pantau statistik untuk tracking progress</li>
+                    <li>Level naik setiap 10 putaran</li>
+                </ul>
+                <br>
+                <p><strong>⌨️ Shortcut Keys:</strong></p>
+                <ul style="margin-left: 1rem;">
+                    <li><strong>SPACE</strong> - Putar roda</li>
+                    <li><strong>H</strong> - Buka bantuan</li>
+                    <li><strong>S</strong> - Buka statistik</li>
+                </ul>
+            </div>
+            <button class="close-btn" onclick="closeModal('helpModal')">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Pengaturan -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>⚙️ Pengaturan Game</h3>
+            
+            <div class="setting-item">
+                <span class="setting-label">🔊 Efek Suara</span>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">⚡ Kecepatan Animasi</span>
+                <div class="setting-control">
+                    <div class="speed-selector">
+                        <button class="speed-btn" data-speed="slow">🐌 Lambat</button>
+                        <button class="speed-btn active" data-speed="normal">🚀 Normal</button>
+                        <button class="speed-btn" data-speed="fast">⚡ Cepat</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">🎊 Efek Confetti</span>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="confettiToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-item">
+                <span class="setting-label">🔄 Reset Game</span>
+                <div class="setting-control">
+                    <button class="reset-btn" id="resetGameBtn">Reset Semua Data</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <button class="close-btn" onclick="closeModal('settingsModal')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Reset -->
+    <div id="confirmModal" class="modal">
+        <div class="confirm-dialog">
+            <h3>⚠️ Konfirmasi Reset</h3>
+            <p>Apakah Anda yakin ingin mereset semua progress game?</p>
+            <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">
+                Semua koin, level, dan statistik akan hilang!
+            </p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-yes" id="confirmYes">Ya, Reset</button>
+                <button class="confirm-btn confirm-no" id="confirmNo">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer dengan informasi tambahan -->
+    <footer class="game-footer">
+        <p>&copy; 2025 SpinWheels Game - Dibuat dengan ❤️ untuk hiburan</p>
+        <p class="disclaimer">Ini adalah permainan hiburan, tidak menggunakan uang asli</p>
+    </footer>
+
+    <script>
+        // === KONFIGURASI GAME ===
+        const GAME_CONFIG = {
+            spinCost: 50,
+            startingCoins: 1000,
+            dailyBonus: 200,
+            // Definisi segment roda dengan probabilitas berdasarkan PRD
+            segments: [
+                { label: '25', value: 25, color: '#FF6B6B', probability: 0.25 },
+                { label: '50', value: 50, color: '#4ECDC4', probability: 0.2 },
+                { label: '75', value: 75, color: '#45B7D1', probability: 0.15 },
+                { label: '100', value: 100, color: '#96CEB4', probability: 0.15 },
+                { label: '150', value: 150, color: '#FFEAA7', probability: 0.1 },
+                { label: '250', value: 250, color: '#DDA0DD', probability: 0.08 },
+                { label: '500', value: 500, color: '#98D8C8', probability: 0.05 },
+                { label: '1000', value: 1000, color: '#FFD700', probability: 0.02 }
+            ]
+        };
+
+        // === VARIABEL GLOBAL ===
+        let gameData = {
+            coins: GAME_CONFIG.startingCoins,
+            level: 1,
+            totalSpins: 0,
+            totalWins: 0,
+            totalCoinsWon: 0,
+            biggestJackpot: 0,
+            maxCoins: GAME_CONFIG.startingCoins,
+            lastDailyBonus: null,
+            isSpinning: false,
+            soundEnabled: true,
+            animationSpeed: 'normal',
+            confettiEnabled: true
+        };
+
+        // === ELEMEN DOM ===
+        const elements = {
+            canvas: document.getElementById('wheelCanvas'),
+            spinButton: document.getElementById('spinButton'),
+            coinAmount: document.getElementById('coinAmount'),
+            playerLevel: document.getElementById('playerLevel'),
+            resultTitle: document.getElementById('resultTitle'),
+            resultDescription: document.getElementById('resultDescription'),
+            resultDisplay: document.getElementById('resultDisplay'),
+            dailyBonus: document.getElementById('dailyBonus'),
+            statsButton: document.getElementById('statsButton'),
+            settingsButton: document.getElementById('settingsButton'),
+            helpButton: document.getElementById('helpButton')
+        };
+
+        const ctx = elements.canvas.getContext('2d');
+
+        // === FUNGSI UTILITAS ===
+        // Menyimpan data game ke localStorage
+        function saveGameData() {
+            try {
+                localStorage.setItem('spinwheels_data', JSON.stringify(gameData));
+            } catch (e) {
+                console.warn('Tidak dapat menyimpan data game:', e);
+            }
+        }
+
+        // Memuat data game dari localStorage
+        function loadGameData() {
+            try {
+                const saved = localStorage.getItem('spinwheels_data');
+                if (saved) {
+                    const loadedData = JSON.parse(saved);
+                    gameData = { ...gameData, ...loadedData };
+                }
+            } catch (e) {
+                console.warn('Tidak dapat memuat data game:', e);
+            }
+            updateUI();
+        }
+
+        // Memperbarui tampilan UI
+        function updateUI() {
+            elements.coinAmount.textContent = gameData.coins.toLocaleString();
+            elements.playerLevel.textContent = gameData.level;
+            
+            // Update tombol spin berdasarkan kondisi
+            if (gameData.isSpinning) {
+                elements.spinButton.disabled = true;
+                elements.spinButton.innerHTML = '<span class="button-text">BERPUTAR...</span>';
+            } else if (gameData.coins < GAME_CONFIG.spinCost) {
+                elements.spinButton.disabled = true;
+                elements.spinButton.innerHTML = '<span class="button-text">KOIN TIDAK CUKUP</span>';
+            } else {
+                elements.spinButton.disabled = false;
+                elements.spinButton.innerHTML = `
+                    <span class="button-text">PUTAR RODA</span>
+                    <span class="button-cost">(-${GAME_CONFIG.spinCost} 🪙)</span>
+                `;
+            }
+
+            // Update stats di modal
+            document.getElementById('totalSpins').textContent = gameData.totalSpins;
+            document.getElementById('totalWins').textContent = gameData.totalWins;
+            document.getElementById('maxCoins').textContent = gameData.maxCoins.toLocaleString();
+            document.getElementById('totalCoinsWon').textContent = gameData.totalCoinsWon.toLocaleString();
+            document.getElementById('biggestJackpot').textContent = gameData.biggestJackpot.toLocaleString();
+            
+            const winRate = gameData.totalSpins > 0 ? 
+                ((gameData.totalWins / gameData.totalSpins) * 100).toFixed(1) : 0;
+            document.getElementById('winRate').textContent = winRate + '%';
+        }
+
+        // === FUNGSI MENGGAMBAR RODA ===
+        function drawWheel() {
+            const centerX = elements.canvas.width / 2;
+            const centerY = elements.canvas.height / 2;
+            const radius = 180;
+            
+            // Bersihkan canvas
+            ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
+            
+            // Hitung sudut untuk setiap segment
+            const totalSegments = GAME_CONFIG.segments.length;
+            const anglePerSegment = (Math.PI * 2) / totalSegments;
+            
+            // Gambar setiap segment
+            GAME_CONFIG.segments.forEach((segment, index) => {
+                const startAngle = index * anglePerSegment;
+                const endAngle = startAngle + anglePerSegment;
+                
+                // Gambar segment
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                
+                // Warna segment dengan gradient
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                gradient.addColorStop(0, segment.color);
+                gradient.addColorStop(1, darkenColor(segment.color, 20));
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Border segment
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Teks pada segment
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + anglePerSegment / 2);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 18px Poppins';
+                ctx.fillText(segment.label, radius * 0.7, -5);
+                ctx.font = 'bold 14px Poppins';
+                ctx.fillText('🪙', radius * 0.7, 15);
+                ctx.restore();
+            });
+            
+            // Gambar lingkaran tengah dengan gradient
+            const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 35);
+            centerGradient.addColorStop(0, '#444');
+            centerGradient.addColorStop(1, '#222');
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 35, 0, Math.PI * 2);
+            ctx.fillStyle = centerGradient;
+            ctx.fill();
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Logo di tengah
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 20px Poppins';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎰', centerX, centerY + 8);
+        }
+
+        // Fungsi untuk menggelapkan warna
+        function darkenColor(color, amount) {
+            const hex = color.replace('#', '');
+            const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - amount);
+            const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - amount);
+            const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - amount);
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        // === FUNGSI CONFETTI ===
+        function createConfetti() {
+            if (!gameData.confettiEnabled) return;
+            
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+                
+                // Bentuk confetti yang bervariasi
+                if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '50%';
+                } else {
+                    confetti.style.borderRadius = '2px';
+                    confetti.style.width = '6px';
+                    confetti.style.height = '15px';
+                }
+                
+                document.body.appendChild(confetti);
+                
+                // Hapus confetti setelah animasi selesai
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, 4000);
+            }
+        }
+
+        // Confetti dengan efek burst dari tengah
+        function createBurstConfetti() {
+            if (!gameData.confettiEnabled) return;
+            
+            const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+            const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = center.x + 'px';
+                confetti.style.top = center.y + 'px';
+                confetti.style.position = 'fixed';
+                
+                const angle = (i / 30) * Math.PI * 2;
+                const velocity = 3 + Math.random() * 4;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                
+                confetti.style.animation = 'none';
+                document.body.appendChild(confetti);
+                
+                // Animasi manual untuk burst effect
+                let x = center.x;
+                let y = center.y;
+                let opacity = 1;
+                
+                const animate = () => {
+                    x += vx;
+                    y += vy + 0.5; // gravity
+                    opacity -= 0.02;
+                    
+                    confetti.style.left = x + 'px';
+                    confetti.style.top = y + 'px';
+                    confetti.style.opacity = opacity;
+                    confetti.style.transform = `rotate(${x * 2}deg)`;
+                    
+                    if (opacity > 0 && y < window.innerHeight + 50) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }
+                };
+                
+                setTimeout(() => requestAnimationFrame(animate), i * 20);
+            }
+        }
+
+        // === FUNGSI SPINNING LOGIC ===
+        function getRandomResult() {
+            const random = Math.random();
+            let cumulative = 0;
+            
+            for (let segment of GAME_CONFIG.segments) {
+                cumulative += segment.probability;
+                if (random <= cumulative) {
+                    return segment;
+                }
+            }
+            
+            // Fallback ke segment pertama
+            return GAME_CONFIG.segments[0];
+        }
+
+        function spinWheel() {
+            if (gameData.isSpinning || gameData.coins < GAME_CONFIG.spinCost) {
+                return;
+            }
+            
+            // Set status spinning
+            gameData.isSpinning = true;
+            gameData.coins -= GAME_CONFIG.spinCost;
+            gameData.totalSpins++;
+            
+            // Update UI
+            updateUI();
+            elements.resultTitle.textContent = '🎲 Berputar...';
+            elements.resultDescription.textContent = 'Menunggu keberuntungan Anda!';
+            
+            // Tentukan hasil
+            const result = getRandomResult();
+            const segmentIndex = GAME_CONFIG.segments.indexOf(result);
+            const segmentAngle = (360 / GAME_CONFIG.segments.length);
+            const targetAngle = (segmentIndex * segmentAngle) + (segmentAngle / 2);
+            
+            // Hitung rotasi total (beberapa putaran penuh + target)
+            const spins = 4 + Math.random() * 4; // 4-8 putaran penuh
+            const totalRotation = (spins * 360) + (360 - targetAngle);
+            
+            // Animasi spinning
+            elements.canvas.style.transform = `rotate(${totalRotation}deg)`;
+            
+            // Durasi animasi berdasarkan pengaturan
+            const animationDuration = gameData.animationSpeed === 'slow' ? 5000 : 
+                                    gameData.animationSpeed === 'fast' ? 2500 : 3500;
+            
+            // Setelah animasi selesai
+            setTimeout(() => {
+                handleSpinResult(result);
+            }, animationDuration);
+        }
+
+        // === FUNGSI HASIL SPINNING ===
+        function handleSpinResult(result) {
+            gameData.isSpinning = false;
+            
+            // Tambah koin kemenangan
+            if (result.value > 0) {
+                gameData.coins += result.value;
+                gameData.totalWins++;
+                gameData.totalCoinsWon += result.value;
+                
+                // Update jackpot terbesar
+                if (result.value > gameData.biggestJackpot) {
+                    gameData.biggestJackpot = result.value;
+                }
+            }
+            
+            // Update koin maksimum
+            if (gameData.coins > gameData.maxCoins) {
+                gameData.maxCoins = gameData.coins;
+            }
+            
+            // Update level berdasarkan total spin
+            gameData.level = Math.floor(gameData.totalSpins / 10) + 1;
+            
+            // Update UI
+            updateUI();
+            
+            // Tampilkan hasil dengan animasi
+            const isJackpot = result.value >= 500;
+            elements.resultTitle.textContent = isJackpot ? '🎉 JACKPOT!' : '🎊 Selamat!';
+            elements.resultDescription.textContent = `Anda memenangkan ${result.value} koin! 🪙`;
+            
+            // Efek visual untuk kemenangan besar
+            if (isJackpot) {
+                elements.resultDisplay.classList.add('win-animation');
+                document.body.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
+                
+                setTimeout(() => {
+                    elements.resultDisplay.classList.remove('win-animation');
+                    document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                }, 1000);
+            }
+            
+            // Simpan progress
+            saveGameData();
+            
+            // Pesan motivasi
+            setTimeout(() => {
+                if (gameData.coins < GAME_CONFIG.spinCost) {
+                    elements.resultTitle.textContent = '💰 Koin Habis!';
+                    elements.resultDescription.textContent = 'Klaim bonus harian atau reset game untuk melanjutkan.';
+                } else {
+                    elements.resultTitle.textContent = '🎯 Siap untuk putaran berikutnya?';
+                    elements.resultDescription.textContent = 'Klik tombol di bawah untuk memutar roda lagi!';
+                }
+            }, 3000);
+        }
+
+        // === FUNGSI BONUS HARIAN ===
+        function claimDailyBonus() {
+            const today = new Date().toDateString();
+            
+            if (gameData.lastDailyBonus !== today) {
+                gameData.coins += GAME_CONFIG.dailyBonus;
+                gameData.lastDailyBonus = today;
+                updateUI();
+                saveGameData();
+                
+                // Animasi bonus dengan confetti
+                elements.resultTitle.textContent = '🎁 Bonus Harian Diklaim!';
+                elements.resultDescription.textContent = `+${GAME_CONFIG.dailyBonus} koin telah ditambahkan ke saldo Anda!`;
+                
+                // Efek visual dengan confetti
+                elements.resultDisplay.classList.add('win-animation');
+                createBurstConfetti();
+                
+                setTimeout(() => {
+                    elements.resultDisplay.classList.remove('win-animation');
+                }, 600);
+                
+                // Update tombol bonus
+                elements.dailyBonus.style.background = 'rgba(255, 255, 255, 0.2)';
+                elements.dailyBonus.innerHTML = '⏰ Besok Lagi';
+                
+            } else {
+                elements.resultTitle.textContent = '⏰ Sudah Diklaim Hari Ini';
+                elements.resultDescription.textContent = 'Kembali lagi besok untuk bonus harian berikutnya!';
+            }
+        }
+
+        // === FUNGSI MODAL ===
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Tutup modal ketika klik di luar area modal
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // === EVENT LISTENERS ===
+        elements.spinButton.addEventListener('click', spinWheel);
+        elements.dailyBonus.addEventListener('click', claimDailyBonus);
+        elements.statsButton.addEventListener('click', () => openModal('statsModal'));
+        elements.helpButton.addEventListener('click', () => openModal('helpModal'));
+        elements.settingsButton.addEventListener('click', () => openModal('settingsModal'));
+
+        // === EVENT LISTENERS UNTUK PENGATURAN ===
+        // Toggle sound
+        document.getElementById('soundToggle').addEventListener('change', function() {
+            gameData.soundEnabled = this.checked;
+            saveGameData();
+        });
+
+        // Toggle confetti
+        document.getElementById('confettiToggle').addEventListener('change', function() {
+            gameData.confettiEnabled = this.checked;
+            saveGameData();
+        });
+
+        // Speed selector
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Update game data
+                gameData.animationSpeed = this.getAttribute('data-speed');
+                saveGameData();
+            });
+        });
+
+        // Reset game button
+        document.getElementById('resetGameBtn').addEventListener('click', function() {
+            openModal('confirmModal');
+        });
+
+        // Confirm reset buttons
+        document.getElementById('confirmYes').addEventListener('click', function() {
+            localStorage.removeItem('spinwheels_data');
+            closeModal('confirmModal');
+            closeModal('settingsModal');
+            
+            // Tampilkan pesan konfirmasi
+            elements.resultTitle.textContent = '🔄 Game Direset!';
+            elements.resultDescription.textContent = 'Semua data telah dihapus. Halaman akan dimuat ulang...';
+            
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        });
+
+        document.getElementById('confirmNo').addEventListener('click', function() {
+            closeModal('confirmModal');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !gameData.isSpinning) {
+                e.preventDefault();
+                spinWheel();
+            } else if (e.code === 'KeyH') {
+                openModal('helpModal');
+            } else if (e.code === 'KeyS') {
+                openModal('statsModal');
+            }
+        });
+
+        // === INISIALISASI GAME ===
+        function initGame() {
+            drawWheel();
+            loadGameData();
+            
+            // Sinkronisasi UI pengaturan dengan data tersimpan
+            document.getElementById('soundToggle').checked = gameData.soundEnabled;
+            document.getElementById('confettiToggle').checked = gameData.confettiEnabled;
+            
+            // Set active speed button
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-speed') === gameData.animationSpeed) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Selamat datang untuk pemain baru
+            if (gameData.totalSpins === 0) {
+                setTimeout(() => {
+                    elements.resultTitle.textContent = '🎯 Selamat Datang di SpinWheels!';
+                    elements.resultDescription.textContent = 'Tekan SPACE atau klik tombol untuk memulai! (💡 Tekan H untuk bantuan)';
+                    
+                    // Confetti welcome untuk pemain baru
+                    if (gameData.confettiEnabled) {
+                        createConfetti();
+                    }
+                }, 1000);
+            }
+            
+            // Update status bonus harian
+            const today = new Date().toDateString();
+            if (gameData.lastDailyBonus !== today) {
+                elements.dailyBonus.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                elements.dailyBonus.innerHTML = '🎁 Bonus Tersedia!';
+            } else {
+                elements.dailyBonus.style.background = 'rgba(255, 255, 255, 0.2)';
+                elements.dailyBonus.innerHTML = '⏰ Besok Lagi';
+            }
+        }
+
+        // Mulai game saat halaman dimuat
+        window.addEventListener('load', initGame);
+        
+        // Simpan game sebelum menutup halaman
+        window.addEventListener('beforeunload', saveGameData);
+    </script>
+</body>
+</html>
