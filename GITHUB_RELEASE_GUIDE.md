@@ -117,7 +117,7 @@ python server.py
 ![Gameplay](screenshot/playing.png)
 *Roda sedang berputar dengan animasi*
 
-![Jackpot](screenshot/jakpot.png)
+![Jackpot](screenshot/jackpot.png)
 *Tampilan jackpot dengan efek confetti*
 
 ![Debug Mode](screenshot/debug_mode.png)
