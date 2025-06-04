@@ -30,6 +30,7 @@ def start_server():
         os.chdir(script_dir)
         
         # Buat server
+        socketserver.TCPServer.allow_reuse_address = True
         with socketserver.TCPServer((HOST, PORT), CustomHTTPRequestHandler) as httpd:
             print(f"🎰 SpinWheels Server dimulai!")
             print(f"📍 URL: http://{HOST}:{PORT}")
