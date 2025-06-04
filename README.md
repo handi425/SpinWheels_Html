@@ -52,7 +52,7 @@ php -S localhost:8000
 *Roda sedang berputar dengan animasi dan feedback visual yang menarik*
 
 ### 🎉 Jackpot Mode
-![Jackpot](screenshot/jakpot.png)
+![Jackpot](screenshot/jackpot.png)
 *Tampilan saat mendapat jackpot dengan efek confetti dan animasi kemenangan*
 
 ### 🔧 Debug Mode
@@ -123,7 +123,7 @@ SpinWheels/
 └── screenshot/         # Screenshot game untuk dokumentasi
     ├── first.png       # Tampilan awal game
     ├── playing.png     # Gameplay saat roda berputar
-    ├── jakpot.png      # Tampilan jackpot dengan confetti
+    ├── jackpot.png      # Tampilan jackpot dengan confetti
     └── debug_mode.png  # Mode debug dengan visualisasi
 ```
 
@@ -334,7 +334,7 @@ const segmentIndex = Math.floor(segmentAtArrow / segmentAngle);
 - **Visual Testing** - Bandingkan hasil dengan screenshot referensi
 - **UI Consistency** - Pastikan tampilan sesuai dengan `first.png`
 - **Feature Verification** - Gunakan `debug_mode.png` untuk verifikasi sistem fair
-- **Gameplay Testing** - Referensi `playing.png` dan `jakpot.png` untuk flow normal
+- **Gameplay Testing** - Referensi `playing.png` dan `jackpot.png` untuk flow normal
 - **Update Screenshots** - Perbarui screenshot jika ada perubahan UI signifikan
 
 ### Development Workflow
@@ -468,7 +468,7 @@ release-v1.0.0/
 ├── screenshot/             # Game screenshots
 │   ├── first.png
 │   ├── playing.png
-│   ├── jakpot.png
+│   ├── jackpot.png
 │   └── debug_mode.png
 └── release-info.json       # Release metadata
 ```
